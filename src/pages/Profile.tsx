@@ -233,14 +233,14 @@ const Profile: React.FC = () => {
                   See all photos
                 </a>
               </div>
-              <div className="row g-2">
+              <div className="row g-2"> 
                 {[
-                  "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&q=80",
-                  "https://images.unsplash.com/photo-1546519638405-a2b97e7d2a5e?w=200&q=80",
-                  "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=200&q=80",
-                  "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=200&q=80",
-                  "https://images.unsplash.com/photo-1473093226795-af9932fe5856?w=200&q=80",
-                  "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=200&q=80",
+                  process.env.PUBLIC_URL + "/photos/apex.png",
+                  process.env.PUBLIC_URL + "/photos/beach.jpg",
+                  process.env.PUBLIC_URL + "/photos/console.webp",
+                  process.env.PUBLIC_URL + "/photos/dawn.jpg",
+                  process.env.PUBLIC_URL + "/photos/green.jpg",
+                  process.env.PUBLIC_URL + "/photos/lake.jpg",
                 ].map((img, i) => (
                   <div key={i} className="col-4">
                     <img

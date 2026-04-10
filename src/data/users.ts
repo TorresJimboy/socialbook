@@ -11,7 +11,7 @@ export const users: User[] = [
   {
     id: 1,
     name: "Jim Torres",
-    avatar: "/avatars/jim.png",
+    avatar: process.env.PUBLIC_URL + "/avatars/jim.png",
     bio: "Software Developer",
     location: "Quezon City, Philippines",
     friendsCount: 342,
@@ -19,7 +19,7 @@ export const users: User[] = [
   {
     id: 2,
     name: "Sarah Johnson",
-    avatar: "/avatars/sarah.avif",
+    avatar: process.env.PUBLIC_URL + "/avatars/sarah.avif",
     bio: "Hiking, travel and coffee lover ☕",
     location: "Denver, CO",
     friendsCount: 518,
@@ -27,7 +27,7 @@ export const users: User[] = [
   {
     id: 3,
     name: "Paul Wilson",
-    avatar: "/avatars/paul.jpg",
+    avatar: process.env.PUBLIC_URL + "/avatars/paul.jpg",
     bio: "Basketball coach | Weekend hiker",
     location: "Chicago, IL",
     friendsCount: 204,
@@ -35,7 +35,7 @@ export const users: User[] = [
   {
     id: 4,
     name: "Pauline Davis",
-    avatar: "avatars/pauline.jpg",
+    avatar: process.env.PUBLIC_URL + "/avatars/pauline.jpg",
     bio: "Designer | Dog mom 🐶",
     location: "Austin, TX",
     friendsCount: 671,
@@ -43,7 +43,7 @@ export const users: User[] = [
   {
     id: 5,
     name: "Dude Brown",
-    avatar: "/avatars/dude.jpg",
+    avatar: process.env.PUBLIC_URL + "/avatars/dude.jpg",
     bio: "Entrepreneur | Foodie",
     location: "New York, NY",
     friendsCount: 290,
@@ -51,7 +51,7 @@ export const users: User[] = [
   {
     id: 6,
     name: "Kate Anderson",
-    avatar: "/avatars/kate.jpg",
+    avatar: process.env.PUBLIC_URL + "/avatars/kate.jpg",
     bio: "Nurse | Yoga instructor 🧘",
     location: "Seattle, WA",
     friendsCount: 413,
@@ -59,7 +59,7 @@ export const users: User[] = [
   {
     id: 7,
     name: "Mark Martinez",
-    avatar: "/avatars/mark.jpg",
+    avatar: process.env.PUBLIC_URL + "/avatars/mark.jpg",
     bio: "Chef & food blogger 🍳",
     location: "Miami, FL",
     friendsCount: 189,
@@ -67,7 +67,7 @@ export const users: User[] = [
   {
     id: 8,
     name: "Dorie Lee",
-    avatar: "/avatars/dorie.avif",
+    avatar: process.env.PUBLIC_URL + "/avatars/dorie.avif",
     bio: "Artist | Dreamer",
     location: "Portland, OR",
     friendsCount: 356,
@@ -75,7 +75,7 @@ export const users: User[] = [
   {
     id: 9,
     name: "Austin Kim",
-    avatar: "/avatars/autine.jpg",
+    avatar: process.env.PUBLIC_URL + "/avatars/autine.jpg",
     bio: "Tech startup founder | Gamer",
     location: "San Jose, CA",
     friendsCount: 501,

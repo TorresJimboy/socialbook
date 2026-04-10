@@ -2,6 +2,7 @@
   "name": "socialbook",
   "version": "1.0.0",
   "private": true,
+  "homepage": "https://TorresJimboy.github.io/socialbook",
   "dependencies": {
     "@types/node": "^18.0.0",
     "@types/react": "^18.0.0",
@@ -16,11 +17,24 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build"
+    "build": "react-scripts build",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "browserslist": {
-    "production": [">0.2%", "not dead", "not op_mini all"],
-    "development": ["last 1 chrome version", "last 1 firefox version", "last 1 safari version"]
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   },
-  "tsconfig": "./tsconfig.json"
+  "tsconfig": "./tsconfig.json",
+  "devDependencies": {
+    "gh-pages": "^6.3.0"
+  }
 }

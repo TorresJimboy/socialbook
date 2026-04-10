@@ -52,7 +52,7 @@ export const CreateStoryCard: React.FC = () => {
     >
       <div style={{ height: 130, overflow: "hidden" }}>
         <img
-          src="/avatars/jim.png"
+          src= {process.env.PUBLIC_URL + "/avatars/jim.png"}
           alt="create story"
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
         />

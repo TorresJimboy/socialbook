@@ -26,7 +26,7 @@ export const posts: Post[] = [
     userId: 3,
     content:
       "Game day! Our team just won the championship. So proud of every single player 🏀🏆",
-    image: "/posts/bascket.avif",
+    image: process.env.PUBLIC_URL + "/posts/bascket.avif",
     timestamp: "4 hours ago",
     likes: 289,
     comments: 47,
