@@ -178,9 +178,8 @@ const Profile: React.FC = () => {
             {tabs.map((tab) => (
               <button
                 key={tab.key}
-                className={`btn fw-semibold px-4 py-3 rounded-0 border-0 ${
-                  activeTab === tab.key ? "text-primary" : "text-secondary"
-                }`}
+                className={`btn fw-semibold px-4 py-3 rounded-0 border-0 ${activeTab === tab.key ? "text-primary" : "text-secondary"
+                  }`}
                 style={{
                   borderBottom: activeTab === tab.key ? "3px solid #1877f2" : "3px solid transparent",
                   fontSize: 15,
@@ -233,7 +232,7 @@ const Profile: React.FC = () => {
                   See all photos
                 </a>
               </div>
-              <div className="row g-2"> 
+              <div className="row g-2">
                 {[
                   process.env.PUBLIC_URL + "/photos/apex.png",
                   process.env.PUBLIC_URL + "/photos/beach.jpg",
@@ -318,12 +317,15 @@ const Profile: React.FC = () => {
                 <h5 className="fw-bold mb-4">Photos</h5>
                 <div className="row g-2">
                   {[
-                    "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&q=80",
-                    "https://images.unsplash.com/photo-1546519638405-a2b97e7d2a5e?w=400&q=80",
-                    "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&q=80",
-                    "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=400&q=80",
-                    "https://images.unsplash.com/photo-1473093226795-af9932fe5856?w=400&q=80",
-                    "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400&q=80",
+                    process.env.PUBLIC_URL + "/photos/apex.png",
+                    process.env.PUBLIC_URL + "/photos/beach.jpg",
+                    process.env.PUBLIC_URL + "/photos/console.webp",
+                    process.env.PUBLIC_URL + "/photos/dawn.jpg",
+                    process.env.PUBLIC_URL + "/photos/green.jpg",
+                    process.env.PUBLIC_URL + "/photos/lake.jpg",
+                    process.env.PUBLIC_URL + "/photos/panda.jpg",
+                    process.env.PUBLIC_URL + "/photos/valorant.webp",
+                    process.env.PUBLIC_URL + "/photos/rocks.jpg"
                   ].map((img, i) => (
                     <div key={i} className="col-4">
                       <img
