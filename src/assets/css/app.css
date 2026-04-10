@@ -1,0 +1,95 @@
+body {
+  background-color: #f0f2f5;
+  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.sidebar-item:hover {
+  background-color: #e4e6eb;
+  transition: background 0.15s ease;
+}
+
+.sidebar-item.active {
+  background-color: #e7f0fd;
+}
+
+.story-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.story-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18) !important;
+}
+
+.card {
+  transition: box-shadow 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Horizontal story scroll */
+.stories-scroll {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.stories-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Custom scrollbar for sidebar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}
+
+/* Navbar active tab indicator */
+.nav-tab-active {
+  border-bottom: 3px solid #1877f2 !important;
+  color: #1877f2 !important;
+}
+
+/* Post image hover */
+.post-image {
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+.post-image:hover {
+  opacity: 0.93;
+}
+
+/* Profile cover gradient */
+.profile-cover {
+  background: linear-gradient(135deg, #1877f2 0%, #42b883 100%);
+}
+
+/* Messenger bubble */
+.msg-bubble-me {
+  background: #1877f2;
+  color: white;
+  border-radius: 20px 20px 4px 20px;
+}
+.msg-bubble-them {
+  background: #e4e6eb;
+  color: #050505;
+  border-radius: 20px 20px 20px 4px;
+}
+
+/* Smooth transitions on interactive elements */
+button {
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+button:active {
+  transform: scale(0.97);
+}
