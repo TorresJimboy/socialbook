@@ -10,10 +10,10 @@ export interface User {
 export const users: User[] = [
   {
     id: 1,
-    name: "Jim Torres",
-    avatar: process.env.PUBLIC_URL + "/avatars/jim.png",
-    bio: "Software Developer",
-    location: "Quezon City, Philippines",
+    name: "You",
+    avatar: process.env.PUBLIC_URL + "/avatars/profile.jpg",
+    bio: "Share what is happening with your friends.",
+    location: "Manila, Philippines",
     friendsCount: 342,
   },
   {

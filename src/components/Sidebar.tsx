@@ -1,13 +1,17 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import SidebarItem from "./SidebarItem";
-import { currentUser } from "../data/users";
 import { shortcuts } from "../data/shortcuts";
+import { useAuth } from "../context/AuthContext";
+import { getDisplayAvatar, getDisplayName } from "../lib/profile";
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [showMore, setShowMore] = useState(false);
+  const { user, profile } = useAuth();
+  const displayName = getDisplayName(profile, user);
+  const displayAvatar = getDisplayAvatar(profile);
 
   const navItems = [
     { icon: "bi-house-fill", label: "Home", path: "/home" },
@@ -33,13 +37,13 @@ const Sidebar: React.FC = () => {
         onClick={() => navigate("/profile")}
       >
         <img
-          src={currentUser.avatar}
-          alt={currentUser.name}
+          src={displayAvatar}
+          alt={displayName}
           className="rounded-circle"
           style={{ width: 36, height: 36, objectFit: "cover" }}
         />
         <span className="fw-semibold text-dark" style={{ fontSize: 15 }}>
-          {currentUser.name}
+          {displayName}
         </span>
       </div>
 

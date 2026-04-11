@@ -1,6 +1,8 @@
 import React from "react";
 import { Story } from "../data/stories";
 import { users } from "../data/users";
+import { useAuth } from "../context/AuthContext";
+import { getDisplayAvatar } from "../lib/profile";
 
 interface StoryCardProps {
   story: Story;
@@ -45,6 +47,9 @@ const StoryCard: React.FC<StoryCardProps> = ({ story }) => {
 };
 
 export const CreateStoryCard: React.FC = () => {
+  const { profile } = useAuth();
+  const displayAvatar = getDisplayAvatar(profile);
+
   return (
     <div
       className="story-card position-relative rounded-4 overflow-hidden flex-shrink-0 bg-white"
@@ -52,7 +57,7 @@ export const CreateStoryCard: React.FC = () => {
     >
       <div style={{ height: 130, overflow: "hidden" }}>
         <img
-          src= {process.env.PUBLIC_URL + "/avatars/jim.png"}
+          src={displayAvatar}
           alt="create story"
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
         />

@@ -1,26 +1,120 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import StoriesCarousel from "../components/StoriesCarousel";
 import PostInputBox from "../components/PostInputBox";
-import PostCard from "../components/PostCard";
+import FeedPostCard from "../components/FeedPostCard";
 import ContactList from "../components/ContactList";
-import { posts as initialPosts, Post } from "../data/posts";
+import {
+  loadPersistedFeedPosts,
+  loadStoredFeedPosts,
+  Post,
+  saveFeedMedia,
+  savePersistedFeedPosts,
+} from "../data/feedPosts";
+
+interface NewPostPayload {
+  content: string;
+  mediaUrl?: string;
+  mediaType?: "image" | "video";
+  mediaFile?: File;
+  feeling?: string;
+}
+
+type FeedEntry =
+  | { kind: "post"; post: Post }
+  | { kind: "deleted"; post: Post };
 
 const Home: React.FC = () => {
-  const [posts, setPosts] = useState<Post[]>(initialPosts);
+  const [feedEntries, setFeedEntries] = useState<FeedEntry[]>(() =>
+    loadStoredFeedPosts().map((post) => ({ kind: "post" as const, post }))
+  );
 
-  const handleNewPost = (content: string) => {
+  const persistFeedEntries = (entries: FeedEntry[]) => {
+    void savePersistedFeedPosts(
+      entries
+        .filter((entry): entry is { kind: "post"; post: Post } => entry.kind === "post")
+        .map((entry) => entry.post)
+    );
+  };
+
+  useEffect(() => {
+    void loadPersistedFeedPosts().then((posts) => {
+      setFeedEntries(posts.map((post) => ({ kind: "post" as const, post })));
+    });
+  }, []);
+
+  useEffect(() => {
+    persistFeedEntries(feedEntries);
+  }, [feedEntries]);
+
+  const handleNewPost = async ({ content, mediaUrl, mediaType, mediaFile, feeling }: NewPostPayload) => {
+    const mediaAssetId = mediaFile ? `post-media-${Date.now()}` : undefined;
+    if (mediaAssetId && mediaFile) {
+      await saveFeedMedia(mediaAssetId, mediaFile);
+    }
+
     const newPost: Post = {
       id: Date.now(),
       userId: 1,
       content,
-      image: "",
+      mediaUrl,
+      mediaType,
+      mediaAssetId,
+      feeling,
       timestamp: "Just now",
-      likes: 0,
-      comments: 0,
+      reactions: {
+        like: 0,
+        heart: 0,
+      },
+      viewerReaction: null,
+      commentItems: [],
       shares: 0,
     };
-    setPosts([newPost, ...posts]);
+    setFeedEntries((currentEntries) => {
+      const nextEntries = [{ kind: "post" as const, post: newPost }, ...currentEntries];
+      persistFeedEntries(nextEntries);
+      return nextEntries;
+    });
+  };
+
+  const handleDeletePost = (postId: number) => {
+    setFeedEntries((currentEntries) =>
+      {
+        const nextEntries: FeedEntry[] = currentEntries.map((entry) =>
+        entry.kind === "post" && entry.post.id === postId
+          ? { kind: "deleted" as const, post: entry.post }
+          : entry
+        );
+        persistFeedEntries(nextEntries);
+        return nextEntries;
+      }
+    );
+  };
+
+  const handleUndoDelete = (postId: number) => {
+    setFeedEntries((currentEntries) =>
+      {
+        const nextEntries: FeedEntry[] = currentEntries.map((entry) =>
+        entry.kind === "deleted" && entry.post.id === postId
+          ? { kind: "post" as const, post: entry.post }
+          : entry
+        );
+        persistFeedEntries(nextEntries);
+        return nextEntries;
+      }
+    );
+  };
+
+  const handleUpdatePost = (updatedPost: Post) => {
+    setFeedEntries((currentEntries) => {
+      const nextEntries: FeedEntry[] = currentEntries.map((entry) =>
+        entry.post.id === updatedPost.id
+          ? { ...entry, post: updatedPost }
+          : entry
+      );
+      persistFeedEntries(nextEntries);
+      return nextEntries;
+    });
   };
 
   return (
@@ -43,9 +137,34 @@ const Home: React.FC = () => {
           <PostInputBox onPost={handleNewPost} />
 
           {/* Feed */}
-          {posts.map((post) => (
-            <PostCard key={post.id} post={post} />
-          ))}
+          {feedEntries.map((entry) =>
+            entry.kind === "post" ? (
+              <FeedPostCard
+                key={entry.post.id}
+                post={entry.post}
+                onDelete={entry.post.userId === 1 ? () => handleDeletePost(entry.post.id) : undefined}
+                onUpdate={handleUpdatePost}
+              />
+            ) : (
+              <div key={entry.post.id} className="card border-0 shadow-sm rounded-4 mb-3">
+                <div className="card-body px-4 py-4 d-flex align-items-center justify-content-between gap-3">
+                  <div>
+                    <p className="mb-1 fw-semibold text-dark">Post deleted</p>
+                    <p className="mb-0 text-muted" style={{ fontSize: 14 }}>
+                      Your post was removed from the feed.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    className="btn btn-outline-primary rounded-pill px-3"
+                    onClick={() => handleUndoDelete(entry.post.id)}
+                  >
+                    Undo
+                  </button>
+                </div>
+              </div>
+            )
+          )}
         </div>
 
         {/* Right Contacts */}

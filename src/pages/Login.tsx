@@ -1,28 +1,110 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../lib/supabase";
+import { DEFAULT_PROFILE_IMAGE } from "../lib/profile";
+
+type Mode = "login" | "signup";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const [mode, setMode] = useState<Mode>("login");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-  const handleLogin = (e: React.FormEvent) => {
+  // ✅ Auto redirect if already logged in
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        navigate("/home");
+      }
+    };
+    checkUser();
+  }, [navigate]);
+
+  const resetForm = () => {
+    setName("");
+    setEmail("");
+    setPassword("");
+    setConfirmPassword("");
+    setError("");
+    setSuccess("");
+  };
+
+  const switchMode = (m: Mode) => {
+    setMode(m);
+    resetForm();
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password: password.trim(),
+    });
+
+    if (error) {
+      setError(error.message);
+    } else if (!data.session) {
+      setError("Please confirm your email before logging in.");
+    } else {
+      navigate("/home");
+    }
+
+    setLoading(false);
+  };
+
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-    if (!email || !password) {
-      setError("Please fill in all fields.");
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
+    if (!name.trim()) {
+      setError("Please enter your full name.");
       return;
     }
 
     setLoading(true);
-    // Simulate login delay
-    setTimeout(() => {
-      setLoading(false);
+
+    const { data, error } = await supabase.auth.signUp({
+      email: email.trim(),
+      password: password.trim(),
+      options: {
+        data: {
+          name: name.trim(),
+          avatar_url: DEFAULT_PROFILE_IMAGE,
+        },
+      },
+    });
+
+    if (error) {
+      setError(error.message);
+    } else if (data.session) {
       navigate("/home");
-    }, 800);
+    } else {
+      setSuccess(
+        "Account created! Check your email to confirm your account."
+      );
+      resetForm();
+      setTimeout(() => switchMode("login"), 3000);
+    }
+
+    setLoading(false);
   };
 
   return (
@@ -34,103 +116,177 @@ const Login: React.FC = () => {
         className="row w-100 justify-content-center align-items-center g-0 px-3"
         style={{ maxWidth: 980 }}
       >
-        {/* Left: branding */}
+        {/* Left branding */}
         <div className="col-md-6 text-center text-md-start px-4 mb-4 mb-md-0">
           <h1
             className="text-primary fw-bold mb-2"
-            style={{ fontSize: 52, fontFamily: "Nunito, sans-serif", letterSpacing: -1 }}
+            style={{
+              fontSize: 52,
+              fontFamily: "Nunito, sans-serif",
+              letterSpacing: -1,
+            }}
           >
             socialbook
           </h1>
-          <p className="text-dark mb-0" style={{ fontSize: 26, lineHeight: 1.4, maxWidth: 380 }}>
+          <p
+            className="text-dark mb-0"
+            style={{ fontSize: 26, lineHeight: 1.4, maxWidth: 380 }}
+          >
             Connect with friends and the world around you on Socialbook.
           </p>
         </div>
 
-        {/* Right: form */}
+        {/* Right form */}
         <div className="col-md-4">
           <div className="card border-0 shadow rounded-4 p-4">
+            {/* Mode tabs */}
+            <div className="d-flex mb-4 border-bottom">
+              <button
+                className={`btn border-0 fw-semibold pb-2 me-3 rounded-0 ${
+                  mode === "login"
+                    ? "text-primary border-bottom border-2 border-primary"
+                    : "text-muted"
+                }`}
+                onClick={() => switchMode("login")}
+              >
+                Log In
+              </button>
+              <button
+                className={`btn border-0 fw-semibold pb-2 rounded-0 ${
+                  mode === "signup" ? "text-primary" : "text-muted"
+                }`}
+                onClick={() => switchMode("signup")}
+              >
+                Create Account
+              </button>
+            </div>
+
+            {/* Alerts */}
             {error && (
-              <div className="alert alert-danger py-2 mb-3 rounded-3" style={{ fontSize: 14 }}>
+              <div className="alert alert-danger py-2 mb-3 rounded-3">
                 {error}
               </div>
             )}
-            <form onSubmit={handleLogin}>
-              <input
-                type="email"
-                className="form-control rounded-3 mb-3"
-                placeholder="Email or phone number"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                style={{ padding: "14px 16px", fontSize: 16 }}
-              />
-              <input
-                type="password"
-                className="form-control rounded-3 mb-3"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                style={{ padding: "14px 16px", fontSize: 16 }}
-              />
-              <button
-                type="submit"
-                className="btn btn-primary w-100 fw-bold rounded-3 mb-3"
-                style={{ padding: "13px", fontSize: 18 }}
-                disabled={loading}
-              >
-                {loading ? (
-                  <>
-                    <span className="spinner-border spinner-border-sm me-2" role="status" />
-                    Logging in...
-                  </>
-                ) : (
-                  "Log In"
-                )}
-              </button>
-              <div className="text-center mb-3">
-                <a href="#" className="text-primary text-decoration-none fw-semibold">
-                  Forgot password?
-                </a>
+            {success && (
+              <div className="alert alert-success py-2 mb-3 rounded-3">
+                {success}
               </div>
-              <hr className="my-3" />
-              <div className="text-center">
+            )}
+
+            {/* LOGIN */}
+            {mode === "login" && (
+              <form onSubmit={handleLogin}>
+                <input
+                  type="email"
+                  className="form-control rounded-3 mb-3"
+                  placeholder="Email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+                <input
+                  type="password"
+                  className="form-control rounded-3 mb-3"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+
                 <button
-                  type="button"
-                  className="btn btn-success px-4 py-2 fw-semibold rounded-3"
-                  style={{ fontSize: 16 }}
-                  onClick={() => navigate("/home")}
+                  type="submit"
+                  className="btn btn-primary w-100 fw-bold rounded-3 mb-3"
+                  disabled={loading || !email || !password}
                 >
-                  Create new account
+                  {loading ? "Logging in..." : "Log In"}
                 </button>
-              </div>
-            </form>
+
+                <div className="text-center">
+                  <button
+                    type="button"
+                    className="btn btn-link text-primary p-0"
+                    onClick={() =>
+                      alert("Forgot password feature coming soon")
+                    }
+                  >
+                    Forgot password?
+                  </button>
+                </div>
+
+                <hr className="my-3" />
+
+                <div className="text-center">
+                  <button
+                    type="button"
+                    className="btn btn-success px-4 py-2 fw-semibold rounded-3"
+                    onClick={() => switchMode("signup")}
+                  >
+                    Create new account
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* SIGNUP */}
+            {mode === "signup" && (
+              <form onSubmit={handleSignup}>
+                <input
+                  type="text"
+                  className="form-control rounded-3 mb-3"
+                  placeholder="Full name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+                <input
+                  type="email"
+                  className="form-control rounded-3 mb-3"
+                  placeholder="Email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+                <input
+                  type="password"
+                  className="form-control rounded-3 mb-3"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <input
+                  type="password"
+                  className="form-control rounded-3 mb-3"
+                  placeholder="Confirm password"
+                  value={confirmPassword}
+                  onChange={(e) =>
+                    setConfirmPassword(e.target.value)
+                  }
+                  required
+                />
+
+                <button
+                  type="submit"
+                  className="btn btn-success w-100 fw-bold rounded-3"
+                  disabled={
+                    loading ||
+                    !email ||
+                    !password ||
+                    !confirmPassword ||
+                    !name
+                  }
+                >
+                  {loading ? "Creating account..." : "Create Account"}
+                </button>
+              </form>
+            )}
           </div>
 
-          <p className="text-center text-muted mt-3" style={{ fontSize: 13 }}>
-            <strong className="text-dark">Create a Page</strong> for a celebrity, brand or business.
+          <p className="text-center text-muted mt-3">
+            <strong className="text-dark">Create a Page</strong> for a celebrity,
+            brand or business.
           </p>
         </div>
-      </div>
-
-      {/* Footer */}
-      <div className="mt-5 text-center text-muted" style={{ fontSize: 12 }}>
-        <div className="d-flex flex-wrap justify-content-center gap-2 mb-2">
-          {["English", "Filipino", "Español", "Français", "Deutsch", "中文", "日本語"].map((lang) => (
-            <a key={lang} href="#" className="text-muted text-decoration-none">
-              {lang}
-            </a>
-          ))}
-        </div>
-        <div className="d-flex flex-wrap justify-content-center gap-2">
-          {["Sign Up", "Log In", "Messenger", "Facebook Lite", "Watch", "People", "Privacy", "Terms", "Help"].map(
-            (item) => (
-              <a key={item} href="#" className="text-muted text-decoration-none">
-                {item}
-              </a>
-            )
-          )}
-        </div>
-        <p className="mt-2">Socialbook © 2025</p>
       </div>
     </div>
   );

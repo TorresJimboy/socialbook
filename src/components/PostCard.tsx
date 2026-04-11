@@ -1,13 +1,23 @@
 import React, { useState } from "react";
 import { Post } from "../data/posts";
 import { users } from "../data/users";
+import { useAuth } from "../context/AuthContext";
+import { getDisplayAvatar, getDisplayName } from "../lib/profile";
 
 interface PostCardProps {
   post: Post;
 }
 
 const PostCard: React.FC<PostCardProps> = ({ post }) => {
-  const author = users.find((u) => u.id === post.userId);
+  const { user, profile } = useAuth();
+  const currentAuthor = {
+    id: 1,
+    name: getDisplayName(profile, user),
+    avatar: getDisplayAvatar(profile),
+  };
+  const author = post.userId === 1
+    ? currentAuthor
+    : users.find((u) => u.id === post.userId);
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likes);
   const [showCommentBox, setShowCommentBox] = useState(false);
@@ -127,7 +137,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
         {showCommentBox && (
           <div className="d-flex align-items-center gap-2 mt-3">
             <img
-              src="https://i.pravatar.cc/150?img=68"
+              src={currentAuthor.avatar}
               alt="you"
               className="rounded-circle"
               style={{ width: 32, height: 32, objectFit: "cover", flexShrink: 0 }}

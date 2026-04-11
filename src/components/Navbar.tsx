@@ -1,10 +1,14 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { currentUser } from "../data/users";
+import { useAuth } from "../context/AuthContext";
+import { getDisplayAvatar, getDisplayName } from "../lib/profile";
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, profile } = useAuth();
+  const displayName = getDisplayName(profile, user);
+  const displayAvatar = getDisplayAvatar(profile);
 
   const navTabs = [
     { path: "/home", icon: "bi-house-fill" },
@@ -73,8 +77,8 @@ const Navbar: React.FC = () => {
             <i className="bi bi-bell-fill text-dark fs-5"></i>
           </button>
           <img
-            src={currentUser.avatar}
-            alt={currentUser.name}
+            src={displayAvatar}
+            alt={displayName}
             className="rounded-circle"
             style={{ width: 40, height: 40, objectFit: "cover", cursor: "pointer" }}
             onClick={() => navigate("/profile")}
