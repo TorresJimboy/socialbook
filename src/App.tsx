@@ -20,8 +20,10 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 );
 
 const App: React.FC = () => {
+  const basename = process.env.PUBLIC_URL || undefined;
+
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <AuthProvider>
         <Routes>
           {/* Public */}
@@ -92,7 +94,7 @@ const App: React.FC = () => {
             </Layout></ProtectedRoute>
           } />
 
-          <Route path="/" element={<Navigate to="/home" replace />} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="*" element={<Layout><NotFound /></Layout>} />
         </Routes>
       </AuthProvider>

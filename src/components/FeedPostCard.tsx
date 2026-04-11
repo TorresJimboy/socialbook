@@ -32,10 +32,23 @@ const FeedPostCard: React.FC<FeedPostCardProps> = ({ post, onDelete, onUpdate })
   }, [post.reactions, post.commentItems, post.viewerReaction]);
 
   const applyReaction = (nextReaction: "like" | "heart") => {
-    if (post.viewerReaction) return;
-
     setReactionCounts((currentCounts) => {
       const nextCounts = { ...currentCounts };
+
+      if (post.viewerReaction && post.viewerReaction !== nextReaction) {
+        return currentCounts;
+      }
+
+      if (post.viewerReaction === nextReaction) {
+        nextCounts[nextReaction] = Math.max(0, nextCounts[nextReaction] - 1);
+        setUserReaction(null);
+        onUpdate?.({
+          ...post,
+          reactions: nextCounts,
+          viewerReaction: null,
+        });
+        return nextCounts;
+      }
 
       nextCounts[nextReaction] += 1;
       setUserReaction(nextReaction);
@@ -180,7 +193,7 @@ const FeedPostCard: React.FC<FeedPostCardProps> = ({ post, onDelete, onUpdate })
             }`}
             style={{ fontSize: 14 }}
             onClick={() => applyReaction("like")}
-            disabled={Boolean(post.viewerReaction)}
+            disabled={Boolean(post.viewerReaction && post.viewerReaction !== "like")}
           >
             <i className={`bi ${userReaction === "like" ? "bi-hand-thumbs-up-fill text-primary" : "bi-hand-thumbs-up"} fs-5`}></i>
             <span className="fw-semibold">Like</span>
@@ -192,7 +205,7 @@ const FeedPostCard: React.FC<FeedPostCardProps> = ({ post, onDelete, onUpdate })
             }`}
             style={{ fontSize: 14 }}
             onClick={() => applyReaction("heart")}
-            disabled={Boolean(post.viewerReaction)}
+            disabled={Boolean(post.viewerReaction && post.viewerReaction !== "heart")}
           >
             <i className={`bi ${userReaction === "heart" ? "bi-heart-fill text-danger" : "bi-heart"} fs-5`}></i>
             <span className="fw-semibold">Heart</span>
