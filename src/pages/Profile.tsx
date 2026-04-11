@@ -1,7 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { loadPersistedFeedPosts, loadStoredFeedPosts, Post, subscribeToFeedUpdates } from "../data/feedPosts";
+import {
+  loadPersistedFeedPosts,
+  loadStoredFeedPosts,
+  Post,
+  savePersistedFeedPosts,
+  subscribeToFeedUpdates,
+} from "../data/feedPosts";
 import FeedPostCard from "../components/FeedPostCard";
 import {
   DEFAULT_PROFILE_IMAGE,
@@ -95,6 +101,16 @@ const Profile: React.FC = () => {
       setUploading(null);
       event.target.value = "";
     }
+  };
+
+  const handleUpdatePost = (updatedPost: Post) => {
+    setUserPosts((currentPosts) => {
+      const nextPosts = currentPosts.map((post) =>
+        post.id === updatedPost.id ? updatedPost : post
+      );
+      void savePersistedFeedPosts(nextPosts.concat(loadStoredFeedPosts().filter((post) => post.userId !== 1)));
+      return nextPosts;
+    });
   };
 
   return (
@@ -351,7 +367,13 @@ const Profile: React.FC = () => {
                     <p className="text-muted">No posts to show yet.</p>
                   </div>
                 ) : (
-                  userPosts.map((post) => <FeedPostCard key={post.id} post={post} />)
+                  userPosts.map((post) => (
+                    <FeedPostCard
+                      key={post.id}
+                      post={post}
+                      onUpdate={handleUpdatePost}
+                    />
+                  ))
                 )}
               </>
             )}

@@ -10,6 +10,7 @@ import {
   Post,
   saveFeedMedia,
   savePersistedFeedPosts,
+  subscribeToFeedUpdates,
 } from "../data/feedPosts";
 
 interface NewPostPayload {
@@ -37,18 +38,40 @@ const Home: React.FC = () => {
     );
   };
 
+  // ✅ FIXED: preserve deleted entries during sync
   useEffect(() => {
-    void loadPersistedFeedPosts().then((posts) => {
-      setFeedEntries(posts.map((post) => ({ kind: "post" as const, post })));
-    });
+    const syncPosts = () => {
+      void loadPersistedFeedPosts().then((posts) => {
+        setFeedEntries((currentEntries) => {
+          const deletedEntries = currentEntries.filter(
+            (entry) => entry.kind === "deleted"
+          );
+
+          const postEntries = posts.map((post) => ({
+            kind: "post" as const,
+            post,
+          }));
+
+          return [...deletedEntries, ...postEntries];
+        });
+      });
+    };
+
+    syncPosts();
+    const unsubscribe = subscribeToFeedUpdates(syncPosts);
+
+    return unsubscribe;
   }, []);
 
-  useEffect(() => {
-    persistFeedEntries(feedEntries);
-  }, [feedEntries]);
-
-  const handleNewPost = async ({ content, mediaUrl, mediaType, mediaFile, feeling }: NewPostPayload) => {
+  const handleNewPost = async ({
+    content,
+    mediaUrl,
+    mediaType,
+    mediaFile,
+    feeling,
+  }: NewPostPayload) => {
     const mediaAssetId = mediaFile ? `post-media-${Date.now()}` : undefined;
+
     if (mediaAssetId && mediaFile) {
       await saveFeedMedia(mediaAssetId, mediaFile);
     }
@@ -70,6 +93,7 @@ const Home: React.FC = () => {
       commentItems: [],
       shares: 0,
     };
+
     setFeedEntries((currentEntries) => {
       const nextEntries = [{ kind: "post" as const, post: newPost }, ...currentEntries];
       persistFeedEntries(nextEntries);
@@ -77,41 +101,51 @@ const Home: React.FC = () => {
     });
   };
 
+  // ✅ FIXED DELETE (no immediate persist)
   const handleDeletePost = (postId: number) => {
     setFeedEntries((currentEntries) =>
-      {
-        const nextEntries: FeedEntry[] = currentEntries.map((entry) =>
+      currentEntries.map((entry) =>
         entry.kind === "post" && entry.post.id === postId
           ? { kind: "deleted" as const, post: entry.post }
           : entry
+      )
+    );
+
+    // ✅ Optional: auto remove after 5 seconds (Facebook-style)
+    setTimeout(() => {
+      setFeedEntries((currentEntries) => {
+        const nextEntries = currentEntries.filter(
+          (entry) => !(entry.kind === "deleted" && entry.post.id === postId)
         );
+
         persistFeedEntries(nextEntries);
         return nextEntries;
-      }
-    );
+      });
+    }, 5000);
   };
 
+  // ✅ FIXED UNDO
   const handleUndoDelete = (postId: number) => {
-    setFeedEntries((currentEntries) =>
-      {
-        const nextEntries: FeedEntry[] = currentEntries.map((entry) =>
+    setFeedEntries((currentEntries) => {
+      const nextEntries = currentEntries.map((entry) =>
         entry.kind === "deleted" && entry.post.id === postId
           ? { kind: "post" as const, post: entry.post }
           : entry
-        );
-        persistFeedEntries(nextEntries);
-        return nextEntries;
-      }
-    );
+      );
+
+      persistFeedEntries(nextEntries);
+      return nextEntries;
+    });
   };
 
   const handleUpdatePost = (updatedPost: Post) => {
     setFeedEntries((currentEntries) => {
-      const nextEntries: FeedEntry[] = currentEntries.map((entry) =>
+      const nextEntries = currentEntries.map((entry) =>
         entry.post.id === updatedPost.id
           ? { ...entry, post: updatedPost }
           : entry
       );
+
       persistFeedEntries(nextEntries);
       return nextEntries;
     });
@@ -130,10 +164,7 @@ const Home: React.FC = () => {
           className="col-12 col-lg-6 px-2 px-lg-4 pt-3 mx-auto"
           style={{ maxWidth: 680 }}
         >
-          {/* Stories Carousel */}
           <StoriesCarousel />
-
-          {/* Post Input */}
           <PostInputBox onPost={handleNewPost} />
 
           {/* Feed */}
@@ -142,11 +173,18 @@ const Home: React.FC = () => {
               <FeedPostCard
                 key={entry.post.id}
                 post={entry.post}
-                onDelete={entry.post.userId === 1 ? () => handleDeletePost(entry.post.id) : undefined}
+                onDelete={
+                  entry.post.userId === 1
+                    ? () => handleDeletePost(entry.post.id)
+                    : undefined
+                }
                 onUpdate={handleUpdatePost}
               />
             ) : (
-              <div key={entry.post.id} className="card border-0 shadow-sm rounded-4 mb-3">
+              <div
+                key={entry.post.id}
+                className="card border-0 shadow-sm rounded-4 mb-3"
+              >
                 <div className="card-body px-4 py-4 d-flex align-items-center justify-content-between gap-3">
                   <div>
                     <p className="mb-1 fw-semibold text-dark">Post deleted</p>

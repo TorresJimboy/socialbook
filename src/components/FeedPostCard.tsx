@@ -35,10 +35,6 @@ const FeedPostCard: React.FC<FeedPostCardProps> = ({ post, onDelete, onUpdate })
     setReactionCounts((currentCounts) => {
       const nextCounts = { ...currentCounts };
 
-      if (post.viewerReaction && post.viewerReaction !== nextReaction) {
-        return currentCounts;
-      }
-
       if (post.viewerReaction === nextReaction) {
         nextCounts[nextReaction] = Math.max(0, nextCounts[nextReaction] - 1);
         setUserReaction(null);
@@ -50,6 +46,10 @@ const FeedPostCard: React.FC<FeedPostCardProps> = ({ post, onDelete, onUpdate })
         return nextCounts;
       }
 
+      if (post.viewerReaction && post.viewerReaction !== nextReaction) {
+        nextCounts[post.viewerReaction] = Math.max(0, nextCounts[post.viewerReaction] - 1);
+      }
+
       nextCounts[nextReaction] += 1;
       setUserReaction(nextReaction);
       onUpdate?.({
@@ -58,6 +58,17 @@ const FeedPostCard: React.FC<FeedPostCardProps> = ({ post, onDelete, onUpdate })
         viewerReaction: nextReaction,
       });
       return nextCounts;
+    });
+  };
+
+  const handleDeleteComment = (commentId: number) => {
+    setCommentItems((currentComments) => {
+      const nextComments = currentComments.filter((item) => item.id !== commentId);
+      onUpdate?.({
+        ...post,
+        commentItems: nextComments,
+      });
+      return nextComments;
     });
   };
 
@@ -193,7 +204,6 @@ const FeedPostCard: React.FC<FeedPostCardProps> = ({ post, onDelete, onUpdate })
             }`}
             style={{ fontSize: 14 }}
             onClick={() => applyReaction("like")}
-            disabled={Boolean(post.viewerReaction && post.viewerReaction !== "like")}
           >
             <i className={`bi ${userReaction === "like" ? "bi-hand-thumbs-up-fill text-primary" : "bi-hand-thumbs-up"} fs-5`}></i>
             <span className="fw-semibold">Like</span>
@@ -205,7 +215,6 @@ const FeedPostCard: React.FC<FeedPostCardProps> = ({ post, onDelete, onUpdate })
             }`}
             style={{ fontSize: 14 }}
             onClick={() => applyReaction("heart")}
-            disabled={Boolean(post.viewerReaction && post.viewerReaction !== "heart")}
           >
             <i className={`bi ${userReaction === "heart" ? "bi-heart-fill text-danger" : "bi-heart"} fs-5`}></i>
             <span className="fw-semibold">Heart</span>
@@ -239,12 +248,23 @@ const FeedPostCard: React.FC<FeedPostCardProps> = ({ post, onDelete, onUpdate })
                   />
                   <div className="bg-light rounded-4 px-3 py-2 flex-grow-1">
                     <div className="d-flex justify-content-between align-items-center gap-2">
-                      <span className="fw-semibold text-dark" style={{ fontSize: 14 }}>
-                        {item.userName}
-                      </span>
-                      <span className="text-muted" style={{ fontSize: 12 }}>
-                        {item.timestamp}
-                      </span>
+                      <div className="d-flex align-items-center gap-2">
+                        <span className="fw-semibold text-dark" style={{ fontSize: 14 }}>
+                          {item.userName}
+                        </span>
+                        <span className="text-muted" style={{ fontSize: 12 }}>
+                          {item.timestamp}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        className="btn btn-sm text-muted p-0"
+                        style={{ width: 18, height: 18, lineHeight: 1 }}
+                        onClick={() => handleDeleteComment(item.id)}
+                        title="Delete comment"
+                      >
+                        <i className="bi bi-x-lg" style={{ fontSize: 11 }}></i>
+                      </button>
                     </div>
                     <p className="mb-0 text-dark" style={{ fontSize: 14 }}>
                       {item.message}
