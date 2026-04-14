@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
@@ -23,7 +23,7 @@ const App: React.FC = () => {
   const basename = process.env.PUBLIC_URL || undefined;
 
   return (
-    <BrowserRouter basename={basename}>
+    <HashRouter>
       <AuthProvider>
         <Routes>
           {/* Public */}
@@ -98,7 +98,7 @@ const App: React.FC = () => {
           <Route path="*" element={<Layout><NotFound /></Layout>} />
         </Routes>
       </AuthProvider>
-    </BrowserRouter>
+    </HashRouter>
   );
 };
 
