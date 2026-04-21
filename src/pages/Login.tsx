@@ -12,6 +12,9 @@ const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [showSignupPassword, setShowSignupPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -39,6 +42,9 @@ const Login: React.FC = () => {
   const switchMode = (m: Mode) => {
     setMode(m);
     resetForm();
+    setShowLoginPassword(false);
+    setShowSignupPassword(false);
+    setShowConfirmPassword(false);
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -184,14 +190,24 @@ const Login: React.FC = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                 />
-                <input
-                  type="password"
-                  className="form-control rounded-3 mb-3"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
+                <div className="position-relative mb-3">
+                  <input
+                    type={showLoginPassword ? "text" : "password"}
+                    className="form-control rounded-3 pe-5"
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="btn border-0 bg-transparent position-absolute top-50 end-0 translate-middle-y text-muted"
+                    onClick={() => setShowLoginPassword((current) => !current)}
+                    aria-label={showLoginPassword ? "Hide password" : "Show password"}
+                  >
+                    <i className={`bi ${showLoginPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
+                  </button>
+                </div>
 
                 <button
                   type="submit"
@@ -246,24 +262,44 @@ const Login: React.FC = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                 />
-                <input
-                  type="password"
-                  className="form-control rounded-3 mb-3"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-                <input
-                  type="password"
-                  className="form-control rounded-3 mb-3"
-                  placeholder="Confirm password"
-                  value={confirmPassword}
-                  onChange={(e) =>
-                    setConfirmPassword(e.target.value)
-                  }
-                  required
-                />
+                <div className="position-relative mb-3">
+                  <input
+                    type={showSignupPassword ? "text" : "password"}
+                    className="form-control rounded-3 pe-5"
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="btn border-0 bg-transparent position-absolute top-50 end-0 translate-middle-y text-muted"
+                    onClick={() => setShowSignupPassword((current) => !current)}
+                    aria-label={showSignupPassword ? "Hide password" : "Show password"}
+                  >
+                    <i className={`bi ${showSignupPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
+                  </button>
+                </div>
+                <div className="position-relative mb-3">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    className="form-control rounded-3 pe-5"
+                    placeholder="Confirm password"
+                    value={confirmPassword}
+                    onChange={(e) =>
+                      setConfirmPassword(e.target.value)
+                    }
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="btn border-0 bg-transparent position-absolute top-50 end-0 translate-middle-y text-muted"
+                    onClick={() => setShowConfirmPassword((current) => !current)}
+                    aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                  >
+                    <i className={`bi ${showConfirmPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
+                  </button>
+                </div>
 
                 <button
                   type="submit"
