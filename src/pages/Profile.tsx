@@ -29,7 +29,7 @@ const Profile: React.FC = () => {
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
 
-  // Use real profile from Supabase, fall back to defaults
+  // Use the local demo profile, with default images until personalized.
   const displayName = getDisplayName(profile, user);
   const displayAvatar = getDisplayAvatar(profile);
   const displayCover = getDisplayCover(profile);

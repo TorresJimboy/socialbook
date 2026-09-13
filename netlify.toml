@@ -1,0 +1,9 @@
+[build]
+  command = "npm run build"
+  publish = "build"
+
+[build.environment]
+  NODE_VERSION = "22"
+  PUBLIC_URL = "."
+
+# The app uses hash routes (/#/home), so no SPA rewrite is needed.
