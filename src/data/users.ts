@@ -75,7 +75,7 @@ export const users: User[] = [
   {
     id: 9,
     name: "Austin Kim",
-    avatar: process.env.PUBLIC_URL + "/avatars/autine.jpg",
+    avatar: process.env.PUBLIC_URL + "/avatars/austin.jpg",
     bio: "Tech startup founder | Gamer",
     location: "San Jose, CA",
     friendsCount: 501,

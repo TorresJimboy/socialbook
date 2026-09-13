@@ -20,8 +20,6 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 );
 
 const App: React.FC = () => {
-  const basename = process.env.PUBLIC_URL || undefined;
-
   return (
     <HashRouter>
       <AuthProvider>
